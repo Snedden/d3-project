@@ -1,0 +1,22 @@
+li{
+	cursor:pointer;
+	text-decoration: none;
+	color:blue;
+	display:block;
+}
+
+ li ul
+{
+    display:none;
+}
+
+ li:hover ul, li:focus ul
+{
+    display:block;
+    color:red;
+}
+
+li:hover 
+{
+	color:red;
+}
