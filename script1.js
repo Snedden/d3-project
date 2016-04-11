@@ -79,11 +79,14 @@ function buildSvgCanvas(){
 
 //nav buidling
 function buildNav(data){
+  var nav=document.getElementsByTagName('nav')[0];
+  nav.innerHTML="";
   console.log('data',data);
   var list=document.createElement('ul');
 
   //build headers
   for (var key in data[0]) {
+      console.info('key', key);
       if (data[0].hasOwnProperty(key)) {
        // console.log(key + " -> " , data[0][key]);
         var item=document.createElement('li');
@@ -96,16 +99,20 @@ function buildNav(data){
         var L2list=document.createElement('ul');
         //item one
         var L2item1=document.createElement('li');
+        L2item1.setAttribute('data-labelName',key);
         var itemText=document.createTextNode('Use as value');
         L2item1.appendChild(itemText);
         L2item1.addEventListener('click',function(){
-          resetAxis();
+          //console.info('ikey ', this.getAttribute('data-labelName'));
+          resetBarValue();
         });
         L2list.appendChild(L2item1);
         //item two
         var L2item2=document.createElement('li');
+        L2item2.setAttribute('data-labelName',key);
         L2item2.addEventListener('click',function(){
-          resetAxis();
+          //console.info('ikey ',this.getAttribute('data-labelName'));
+          resetBarLabel(this.getAttribute('data-labelName'));
         });
         var itemText=document.createTextNode('Use as label');
         L2item2.appendChild(itemText);
@@ -117,14 +124,18 @@ function buildNav(data){
       }
     }
 
-
-  document.getElementsByTagName('nav')[0].appendChild(list);
+  nav.appendChild(list);
+  //document.getElementsByTagName('nav')[0].appendChild(list);
 
 }
 
-function resetAxis(){
+function resetBarLabel(lbl){
   removeChart();
-  buildBarChart('label2');
+  buildBarChart(lbl);
+}
+
+function resetBarValue(){
+
 }
 
 function removeChart(){
@@ -186,7 +197,7 @@ function buildBarChart(lbl){
           })
           .attr('width', xScale.rangeBand())
           .attr('x', function(d,i) {
-              return (i*(width/labelArray.length));
+              return xScale(labelArray[i]); 
           })
           .attr('height', 0)
           .attr('y', height)
@@ -196,7 +207,7 @@ function buildBarChart(lbl){
           tooltip.transition()
               .style('opacity', .9)
 
-          tooltip.html(d.label+d.value)
+          tooltip.html(d[lbl]+d.value)
               .style('left', (d3.event.pageX - 35) + 'px')
               .style('top',  (d3.event.pageY - 30) + 'px')
 
@@ -208,9 +219,11 @@ function buildBarChart(lbl){
       })
 
       .on('mouseout', function(d) {
-          d3.select(this)
-              .style('opacity', 1)
-              .style('fill', tempColor)
+        tooltip.transition()
+              .style('opacity', 0)
+        d3.select(this)
+            .style('opacity', 1)
+            .style('fill', tempColor)
       })
 
       .transition()
